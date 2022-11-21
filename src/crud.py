@@ -56,3 +56,35 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     limit - маскимальное количество записей
     """
     return db.query(models.User).offset(skip).limit(limit).all()
+
+def get_renters(db:Session, skip:int=0, limit:int=100):
+    """
+    Получить владельцев квартир
+    """
+    return db.query(models.Renter).offset(skip).limit(limit).all()
+
+def get_renter(db: Session, renter_id: int):
+    """
+    Получить владельцев квартиры по id
+    """
+    return db.query(models.Renter).filter(models.Renter.id == user_id).first()
+
+def create_renter(db: Session, renter: schemas.RenterCreate):
+    """
+    Добавление нового пользователя
+    """
+    db_renter= models.Renter(accaunt=renter.accaunt, name=renter.name, second_name=renter.second_name, middle_name=renter.middle_name,phone_number=renter.phone_number,
+                             #apartment=null
+                             )
+    #db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
+    db.add(db_renter)
+    #db.add(db_user)
+    db.commit()
+    db.refresh(db_renter)
+    return db_renter
+
+def get_renter_by_accaunt(db: Session, accaunt: int):
+    """
+    Получить пользователя по его email
+    """
+    return db.query(models.Renter).filter(models.Renter.accaunt == accaunt).first()

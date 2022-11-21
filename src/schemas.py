@@ -46,6 +46,29 @@ class UserCreate(UserBase):
     """
     password: str
 
+class RenterBase(BaseModel):
+    """
+    Базовый класс для Renter
+    """
+    name:str
+    second_name:str
+    middle_name:str | None = None
+    
+class RenterCreate(RenterBase):
+    """
+    Класс для создания владельца
+    """
+    accaunt:int
+    phone_number:int
+
+class Renter(RenterBase):
+    """
+    Класс для отображения владельца
+    """
+    id:int
+    accaunt:int
+    phone_number:int
+    #apartment: 
 
 class User(UserBase):
     """
@@ -58,3 +81,5 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
+

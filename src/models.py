@@ -1,6 +1,12 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, declarative_base
 
+from sqlalchemy import Table, Index, Integer, String, Column, Text, \
+                       DateTime, Boolean, PrimaryKeyConstraint, \
+                       UniqueConstraint, ForeignKeyConstraint
+from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
+
 
 Base = declarative_base()
 
@@ -36,11 +42,13 @@ class Item(BaseModel):
 
 class Renter(BaseModel):
     __tablename__="renter"
-    accaunt=Column(Integer, unique=True, index=True)
-    name=Column(String)
-    second_name=Column(String)
-    middle_name=Column(String)
-    phone_number=Column(String)
+    accaunt=Column(Integer, unique=True, index=True, nullable=False)
+    name=Column(String, nullable=False)
+    second_name=Column(String, nullable=False)
+    middle_name=Column(String, nullable=True)
+    phone_number=Column(String, nullable=True)
+##Поменять nullable
+    #apartment=relationship("Apartment", uselist=False)
 
 
 class Apartment(BaseModel):
@@ -50,16 +58,19 @@ class Apartment(BaseModel):
     apartment=Column(String)
     resedents=Column(Integer)
     area=Column(Integer)
-    owner_id=Column(Integer, ForeignKey("renter.id"))
-
-    owner= relationship("Renter", back_populates="apartment")
+    
+    #owner_id=Column(Integer, ForeignKey("renter.id"))
+    #owner= relationship("Renter", backref="apartment", uselist=False)
     
 class service_type(BaseModel):
     __tablename__="service_type"
     name=Column(String)
     mesure=Column(String)
 
-#class service(BaseModel):
-#    service_number
+class service(BaseModel):
+    __tablename__="service"
+    service_number=Column(Integer)
+    tariff=Column(Integer)
+    service_type_id=Column(Integer, ForeignKey("renter.id"))
 
     

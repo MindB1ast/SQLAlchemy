@@ -70,3 +70,21 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
+
+@app.post("/renter/", response_model=schemas.Renter)
+def create_renter(renter: schemas.RenterCreate, db: Session = Depends(get_db)):
+    """
+    Создание пользователя, если такой email уже есть в БД, то выдается ошибка
+    """
+    db_renter = crud.get_renter_by_accaunt(db, accaunt= renter.accaunt)
+    if db_renter:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return crud.create_renter(db=db, renter=renter)
+
+@app.get("/renters/", response_model=list[schemas.Renter])
+def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Получение списка пользователей
+    """
+    renters = crud.get_renters(db, skip=skip, limit=limit)
+    return renters

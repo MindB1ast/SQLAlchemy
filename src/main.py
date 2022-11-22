@@ -82,7 +82,7 @@ def create_renter(renter: schemas.RenterCreate, db: Session = Depends(get_db)):
     return crud.create_renter(db=db, renter=renter)
 
 @app.get("/renters/", response_model=list[schemas.Renter])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_renters(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
     Получение списка пользователей
     """

@@ -54,6 +54,7 @@ class RenterBase(BaseModel):
     second_name:str
     middle_name:str | None = None
     
+    
 class RenterCreate(RenterBase):
     """
     Класс для создания владельца
@@ -68,7 +69,12 @@ class Renter(RenterBase):
     id:int
     accaunt:int
     phone_number:int
-    #apartment: 
+    #apartment:
+    class Config:
+        """
+        Задание настройки для возможности работать с объектами ORM
+        """
+        orm_mode = True
 
 class User(UserBase):
     """

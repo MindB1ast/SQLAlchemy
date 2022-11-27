@@ -48,19 +48,19 @@ class Renter(BaseModel):
     middle_name=Column(String, nullable=True)
     phone_number=Column(String, nullable=True)
 ##Поменять nullable
-    #apartment=relationship("Apartment", uselist=False)
+    apartment=relationship("Apartment", back_populates="owner", uselist=False)
 
 
 class Apartment(BaseModel):
     __tablename__="apartment"
-    street=Column(String)
-    house=Column(String)
-    apartment=Column(String)
-    resedents=Column(Integer)
+    street=Column(String, nullable=False)
+    house=Column(String,nullable=False)
+    number= Column(String, nullable=False)
+    resedents = Column(Integer)
     area=Column(Integer)
     
-    #owner_id=Column(Integer, ForeignKey("renter.id"))
-    #owner= relationship("Renter", backref="apartment", uselist=False)
+    owner_id=Column(Integer, ForeignKey("renter.id"), unique=True)
+    owner= relationship("Renter", back_populates="apartment")
     
 class service_type(BaseModel):
     __tablename__="service_type"
@@ -72,5 +72,7 @@ class service(BaseModel):
     service_number=Column(Integer)
     tariff=Column(Integer)
     service_type_id=Column(Integer, ForeignKey("renter.id"))
+
+
 
     

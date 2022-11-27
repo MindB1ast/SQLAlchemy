@@ -55,7 +55,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/users/{user_id}/items/", response_model=schemas.Item)
 def create_item_for_user(
-    user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
+        user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
 ):
     """
     Добавление пользователю нового предмета
@@ -71,20 +71,78 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
 
+
 @app.post("/renter/", response_model=schemas.Renter)
 def create_renter(renter: schemas.RenterCreate, db: Session = Depends(get_db)):
     """
     Создание пользователя, если такой email уже есть в БД, то выдается ошибка
     """
-    db_renter = crud.get_renter_by_accaunt(db, accaunt= renter.accaunt)
+    db_renter = crud.get_renter_by_accaunt(db, accaunt=renter.accaunt)
     if db_renter:
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_renter(db=db, renter=renter)
 
+
 @app.get("/renters/", response_model=list[schemas.Renter])
 def read_renters(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
-    Получение списка пользователей
+    Получение списка владельцев
     """
     renters = crud.get_renters(db, skip=skip, limit=limit)
     return renters
+
+
+@app.get("/renters/accaunt/{accaunt}", response_model=schemas.Renter)
+def read_reanter_by_accaunt(accaunt: int, db: Session = Depends(get_db)):
+    """
+    Получение владельца по номеру лицевого счёта, если такого нет, то выдается ошибка
+    """
+    db_renter = crud.get_renter_by_accaunt(db, accaunt=accaunt)
+    if db_renter is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_renter
+
+
+@app.get("/renters/id/{id}", response_model=schemas.Renter)
+def read_reanter_by_id(id: int, db: Session = Depends(get_db)):
+    """
+    Получение Владельца по id, если такого id нет, то выдается ошибка
+    """
+    db_renter = crud.get_renter(db, renter_id=id)
+    if db_renter is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_renter
+
+
+@app.get("/apartments/", response_model=list[schemas.Apartment])
+def read_apartments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Получение списка владельцев
+    """
+    apartments = crud.get_apartments(db, skip=skip, limit=limit)
+    return apartments
+
+@app.get("/apartment/{id}", response_model=schemas.Apartment)
+def read_apartment(id: int, db: Session = Depends(get_db)):
+    """
+    Получение Квартиры по id, если такого id нет, то выдается ошибка
+    """
+    db_apartment = crud.get_apartment(db, apartment_id=id)
+    if db_apartment is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_apartment
+
+@app.post("/renter/{renter_id}/apartment/", response_model=schemas.Apartment)
+def create_apartment_for_renter( apartment: schemas.ApertmentCreate, db: Session = Depends(get_db)):
+    """
+    Добавление пользователю нового предмета
+    """
+
+    #renter=crud.get_renter(db, renter_id=renter_id)
+
+    #if (renter is None):
+    #    raise HTTPException(status_code=404, detail="User not found, create user first or use other user")
+    #if (renter.apartment is not None):
+    #    raise HTTPException(status_code=404, detail="User alredy have apartment")
+
+    return crud.create_apartment(db=db, apartment=apartment)

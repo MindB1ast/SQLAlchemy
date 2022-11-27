@@ -46,35 +46,6 @@ class UserCreate(UserBase):
     """
     password: str
 
-class RenterBase(BaseModel):
-    """
-    Базовый класс для Renter
-    """
-    name:str
-    second_name:str
-    middle_name:str | None = None
-    
-    
-class RenterCreate(RenterBase):
-    """
-    Класс для создания владельца
-    """
-    accaunt:int
-    phone_number:int
-
-class Renter(RenterBase):
-    """
-    Класс для отображения владельца
-    """
-    id:int
-    accaunt:int
-    phone_number:int
-    #apartment:
-    class Config:
-        """
-        Задание настройки для возможности работать с объектами ORM
-        """
-        orm_mode = True
 
 class User(UserBase):
     """
@@ -87,5 +58,70 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
+
+class ApartmentBase(BaseModel):
+    street: str
+    house: str
+    number: str
+    resedents: int
+    area: int
+
+
+
+class ApertmentCreate(ApartmentBase):
+    owner_id:int
+
+    class Config:
+        """
+        Задание настройки для возможности работать с объектами ORM
+        """
+        orm_mode = True
+
+
+
+class Apartment(ApartmentBase):
+
+    id: int
+    owner_id: int
+
+    class Config:
+        """
+        Задание настройки для возможности работать с объектами ORM
+        """
+        orm_mode = True
+
+
+class RenterBase(BaseModel):
+    """
+    Базовый класс для Renter
+    """
+    name: str
+    second_name: str
+    middle_name: str | None = None
+
+
+class RenterCreate(RenterBase):
+    """
+    Класс для создания владельца
+    """
+    accaunt: int
+    phone_number: int
+
+
+class Renter(RenterBase):
+    """
+    Класс для отображения владельца
+    """
+    id: int
+    accaunt: int
+    phone_number: int
+
+    apartment: Apartment | None
+    class Config:
+        """
+        Задание настройки для возможности работать с объектами ORM
+        """
+        orm_mode = True
+
 
 

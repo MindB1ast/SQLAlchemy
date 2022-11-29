@@ -2,13 +2,13 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, declarative_base
 
 from sqlalchemy import Table, Index, Integer, String, Column, Text, \
-                       DateTime, Boolean, PrimaryKeyConstraint, \
-                       UniqueConstraint, ForeignKeyConstraint
+    DateTime, Boolean, PrimaryKeyConstraint, \
+    UniqueConstraint, ForeignKeyConstraint, Float
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-
 Base = declarative_base()
+
 
 class BaseModel(Base):
     """
@@ -20,6 +20,7 @@ class BaseModel(Base):
 
     def __repr__(self):
         return f"<{type(self).__name__}(id={self.id})>"
+
 
 class User(BaseModel):
     __tablename__ = "users"
@@ -36,43 +37,55 @@ class Item(BaseModel):
 
     title = Column(String, index=True)
     description = Column(String, index=True)
-    owner_id = Column(Integer, ForeignKey("users.id"))
 
+    owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="items")
 
+
 class Renter(BaseModel):
-    __tablename__="renter"
-    accaunt=Column(Integer, unique=True, index=True, nullable=False)
-    name=Column(String, nullable=False)
-    second_name=Column(String, nullable=False)
-    middle_name=Column(String, nullable=True)
-    phone_number=Column(String, nullable=True)
-##Поменять nullable
-    apartment=relationship("Apartment", back_populates="owner", uselist=False)
+    __tablename__ = "renter"
+    account = Column(Integer, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
+    second_name = Column(String, nullable=False)
+    middle_name = Column(String, nullable=True)
+    phone_number = Column(String, nullable=True)
+    ##Поменять nullable
+    apartment = relationship("Apartment", back_populates="owner", uselist=False)
+
+    payments = relationship("Payment", back_populates="renter")
 
 
 class Apartment(BaseModel):
-    __tablename__="apartment"
-    street=Column(String, nullable=False)
-    house=Column(String,nullable=False)
-    number= Column(String, nullable=False)
+    __tablename__ = "apartment"
+    street = Column(String, nullable=False)
+    house = Column(String, nullable=False)
+    number = Column(String, nullable=False)
     resedents = Column(Integer)
-    area=Column(Integer)
-    
-    owner_id=Column(Integer, ForeignKey("renter.id"), unique=True)
-    owner= relationship("Renter", back_populates="apartment")
-    
+    area = Column(Integer)
+
+    owner_id = Column(Integer, ForeignKey("renter.id"), unique=True)
+    owner = relationship("Renter", back_populates="apartment")
+
+
 class service_type(BaseModel):
-    __tablename__="service_type"
-    name=Column(String)
-    mesure=Column(String)
+    __tablename__ = "service_type"
+    name = Column(String)
+    mesure = Column(String)
+
 
 class service(BaseModel):
-    __tablename__="service"
-    service_number=Column(Integer)
-    tariff=Column(Integer)
-    service_type_id=Column(Integer, ForeignKey("renter.id"))
+    __tablename__ = "service"
+    service_number = Column(Integer)
+    tariff = Column(Integer)
+    service_type_id = Column(Integer, ForeignKey("renter.id"))
 
 
+class Payment(BaseModel):
+    __tablename__ = "payment"
+    actualy_spent = Column(Float)
+    border_date = Column(DateTime)
+    payed_in_time = Column(Boolean)
+    date_of_payment = Column(DateTime)
 
-    
+    renter_acount = Column(Integer, ForeignKey("renter.account"))
+    renter = relationship("Renter", back_populates="payments")

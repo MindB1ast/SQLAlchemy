@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 
+from pydantic import BaseModel
+from datetime import datetime
 
 class ItemBase(BaseModel):
     """
@@ -59,17 +60,21 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
-class ApartmentBase(BaseModel):
-    street: str
-    house: str
-    number: str
-    resedents: int
-    area: int
+
+class PaymentBase(BaseModel):
+    """
+    Базовый класс для оплаты за услугу
+    """
+    actualy_spent: float
+    border_date: datetime = None
+    payed_in_time: bool
+    date_of_payement: datetime = None
 
 
 
-class ApertmentCreate(ApartmentBase):
-    owner_id:int
+class Payment(PaymentBase):
+    id: int
+    renter_acount: int
 
     class Config:
         """
@@ -78,9 +83,25 @@ class ApertmentCreate(ApartmentBase):
         orm_mode = True
 
 
+class PaymentCreate(PaymentBase):
+    pass
+
+
+
+class ApartmentBase(BaseModel):
+    street: str
+    house: str
+    number: str
+    resedents: int
+    area: int
+
+
+class ApertmentCreate(ApartmentBase):
+    # owner_id:int
+    pass
+
 
 class Apartment(ApartmentBase):
-
     id: int
     owner_id: int
 
@@ -104,7 +125,7 @@ class RenterCreate(RenterBase):
     """
     Класс для создания владельца
     """
-    accaunt: int
+    account: int
     phone_number: int
 
 
@@ -113,15 +134,25 @@ class Renter(RenterBase):
     Класс для отображения владельца
     """
     id: int
-    accaunt: int
+    account: int
     phone_number: int
 
+    payment: list[Payment] = []
     apartment: Apartment | None
+
     class Config:
         """
         Задание настройки для возможности работать с объектами ORM
         """
         orm_mode = True
 
+
+class ApartmentSearch(BaseModel):
+    """
+    Форма для поиска дома
+    """
+    Street: str
+    House: str
+    Number: str
 
 

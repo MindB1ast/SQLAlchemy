@@ -1,6 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
 from src import models, schemas
+from sqlalchemy import select
+
+from fastapi import HTTPException
 
 
 def create_user(db: Session, user: schemas.UserCreate):
@@ -76,8 +81,8 @@ def create_renter(db: Session, renter: schemas.RenterCreate):
     """
     Добавление нового пользователя
     """
-    db_renter = models.Renter(accaunt=renter.accaunt, name=renter.name, second_name=renter.second_name,
-                              middle_name=renter.middle_name, phone_number=renter.phone_number,
+    db_renter = models.Renter(account=renter.account, name=renter.name, second_name=renter.second_name,
+                              middle_name=renter.middle_name, phone_number=renter.phone_number
                               # apartment=null
                               )
     # db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
@@ -88,11 +93,11 @@ def create_renter(db: Session, renter: schemas.RenterCreate):
     return db_renter
 
 
-def get_renter_by_accaunt(db: Session, accaunt: int):
+def get_renter_by_account(db: Session, account: int):
     """
     Получить пользователя по его email
     """
-    return db.query(models.Renter).filter(models.Renter.accaunt == accaunt).first()
+    return db.query(models.Renter).filter(models.Renter.account == account).first()
 
 
 def get_apartments(db: Session, skip: int = 0, limit: int = 100):
@@ -100,6 +105,11 @@ def get_apartments(db: Session, skip: int = 0, limit: int = 100):
     Получить владельцев квартир
     """
     return db.query(models.Apartment).offset(skip).limit(limit).all()
+
+
+def get_apartment_by_shn(db: Session, Street: str, House: str, Number: str):
+    apartment = db.query(models.Apartment).filter_by(street=Street, house=House, number=Number).first()
+    return apartment
 
 
 def get_apartment(db: Session, apartment_id: int):
@@ -110,35 +120,41 @@ def get_apartment(db: Session, apartment_id: int):
 
 
 # добавить проверку на наличие квартиры у renterа
-def create_apartment(db: Session, apartment: schemas.ApertmentCreate):
+def create_apartment(db: Session, apartment: schemas.ApertmentCreate, renter_id: int):
     """
     Добавление нового пользователя
     """
+    # renter= get_renter(db, apartment.owner_id)
+
+    if get_apartment_by_shn(db, apartment.street, apartment.house, apartment.number) is not None:
+        raise HTTPException(status_code=404, detail="Apartment with this location already exist")
 
     db_apartment = models.Apartment(
-
-
         street=apartment.street,
         house=apartment.house,
+
         number=apartment.number,
         resedents=apartment.resedents,
         area=apartment.area,
-        owner_id=apartment.owner_id)
-
-    #db_item = models.Item(**item.dict(), owner_id=user_id)
-    print(db_apartment)
+        owner_id=renter_id
+    )
+    # db_item = models.Item(**item.dict(), owner_id=user_id)
     db.add(db_apartment)
     db.commit()
     db.refresh(db_apartment)
     return db_apartment
 
 
-# def create_user_item2(db: Session, item: schemas.ItemCreate, user_id: int):
-#    """
-#    Добавление нового Item пользователю
-#    """
-#    db_item = models.Item(**item.dict(), owner_id=user_id)
-#    db.add(db_item)
-#    db.commit()
-#    db.refresh(db_item)
-#    return db_item
+def create_payment(db: Session, payment: schemas.PaymentCreate, Renter_acount: int):
+    db_payment = models.Payment(**payment.dict(), renter_acount=Renter_acount)
+
+    db.add(db_payment)
+    db.commit()
+    db.refresh(db_payment)
+    return db_payment
+
+def get_payments(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Получить владельцев квартир
+    """
+    return db.query(models.Payment).offset(skip).limit(limit).all()

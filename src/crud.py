@@ -145,16 +145,41 @@ def create_apartment(db: Session, apartment: schemas.ApertmentCreate, renter_id:
     return db_apartment
 
 
-def create_payment(db: Session, payment: schemas.PaymentCreate, Renter_acount: int):
-    db_payment = models.Payment(**payment.dict(), renter_acount=Renter_acount)
+def create_payment(db: Session, payment: schemas.PaymentBase, Renter_id: int #, Service_id: int
+                   ):
+    db_payment = models.Payment(**payment.dict(), renter_id=Renter_id#, service_id=Service_id
+                                )
 
     db.add(db_payment)
     db.commit()
     db.refresh(db_payment)
     return db_payment
 
+
 def get_payments(db: Session, skip: int = 0, limit: int = 100):
     """
     Получить владельцев квартир
     """
     return db.query(models.Payment).offset(skip).limit(limit).all()
+
+
+def get_payments_by_renter(db: Session, renter_id: int):
+    return db.query(models.Payment).filter_by(renter_id=renter_id).all()
+
+
+def create_service(db: Session, service: schemas.ServiceCreate):
+    db_service = models.Service(
+        service_number=service.service_number,
+        tariff=service.tariff,
+    )
+
+    db.add(db_service)
+    db.commit()
+    db.refresh(db_service)
+    return db_service
+
+def get_services(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Получить услуги
+    """
+    return db.query(models.Service).offset(skip).limit(limit).all()

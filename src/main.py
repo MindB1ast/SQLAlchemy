@@ -93,11 +93,12 @@ def read_renters(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
 
 
 @app.get("/renters/accaunt/{accaunt}", response_model=schemas.Renter)
-def read_reanter_by_accaunt(accaunt: int, db: Session = Depends(get_db)):
+def read_reanter_by_accaunt(account: int, db: Session = Depends(get_db)):
     """
     Получение владельца по номеру лицевого счёта, если такого нет, то выдается ошибка
     """
-    db_renter = crud.get_renter_by_accaunt(db, accaunt=accaunt)
+    db_renter = crud.get_renter_by_account(db, account=account)
+
     if db_renter is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_renter
@@ -161,17 +162,19 @@ def create_apartment_for_renter(owner_id: int, apartment: schemas.ApertmentCreat
 #    return apartment
 
 @app.post("/renter/{renter_id}/payment/", response_model=schemas.Payment)
-def create_payment_for_renter(owner_id: int, payment: schemas.PaymentCreate, db: Session = Depends(get_db)):
+def create_payment_for_renter(renter_id: int, payment: schemas.PaymentCreate, db: Session = Depends(get_db)):
     """
     Добавление квартиросёмщику оплаты
     """
-
-    renter = crud.get_renter(db, renter_id=owner_id)
+    print(renter_id)
+    renter = crud.get_renter(db=db , renter_id=renter_id)
 
     if (renter is None):
-        raise HTTPException(status_code=404, detail="User not found, create user first or use other user")
+        raise HTTPException(status_code=404, detail="Renter not found, create user first or use other user")
 
-    return crud.create_payment(db=db, payment=payment, Renter_acount=renter.account)
+    payment = crud.create_payment(db=db, payment=payment, Renter_id=renter_id )
+
+    return payment
 
 
 @app.get("/payment/", response_model=list[schemas.Payment])
@@ -181,3 +184,8 @@ def read_payments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     """
     payments = crud.get_payments(db, skip=skip, limit=limit)
     return payments
+
+# @app.get("/renter/{renter_id}/payment/")
+# def get_payments_by_renter( db: Session = Depends(get_db), renter_id: int):
+#    print(renter_id)
+#    return crud.get_payments_by_renter( db=db )#,renter_id=renter_id )

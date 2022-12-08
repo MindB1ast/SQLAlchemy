@@ -1,6 +1,6 @@
-
 from pydantic import BaseModel
 from datetime import datetime
+
 
 class ItemBase(BaseModel):
     """
@@ -68,24 +68,20 @@ class PaymentBase(BaseModel):
     actualy_spent: float
     border_date: datetime = None
     payed_in_time: bool
-    date_of_payement: datetime = None
-
+    date_of_payment: datetime = None
 
 
 class Payment(PaymentBase):
     id: int
-    renter_acount: int
+    renter_id: int
+    #payment_id:int
 
     class Config:
-        """
-        Задание настройки для возможности работать с объектами ORM
-        """
         orm_mode = True
 
 
 class PaymentCreate(PaymentBase):
     pass
-
 
 
 class ApartmentBase(BaseModel):
@@ -136,7 +132,6 @@ class Renter(RenterBase):
     id: int
     account: int
     phone_number: int
-
     payment: list[Payment] = []
     apartment: Apartment | None
 
@@ -156,3 +151,22 @@ class ApartmentSearch(BaseModel):
     Number: str
 
 
+class ServiceBase(BaseModel):
+    service_number: int
+    tariff: float
+
+
+class ServiceCreate(ServiceBase):
+    pass
+
+
+class Service(ServiceBase):
+    id: int
+    service_number: int
+    tariff: float
+    Payments: list[Payment] = []
+    class Config:
+        """
+        Задание настройки для возможности работать с объектами ORM
+        """
+        orm_mode = True

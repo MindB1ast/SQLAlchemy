@@ -73,11 +73,11 @@ class service_type(BaseModel):
     mesure = Column(String)
 
 
-class service(BaseModel):
+class Service(BaseModel):
     __tablename__ = "service"
     service_number = Column(Integer)
-    tariff = Column(Integer)
-    service_type_id = Column(Integer, ForeignKey("renter.id"))
+    tariff = Column(Float)
+    #payments = relationship("Payment", back_populates="service")
 
 
 class Payment(BaseModel):
@@ -87,5 +87,8 @@ class Payment(BaseModel):
     payed_in_time = Column(Boolean)
     date_of_payment = Column(DateTime)
 
-    renter_acount = Column(Integer, ForeignKey("renter.account"))
+    renter_id = Column(Integer, ForeignKey("renter.id"))
     renter = relationship("Renter", back_populates="payments")
+
+    #service_id = Column(Integer, ForeignKey("renter.id"))
+    #service = relationship("Service", back_populates="payments")

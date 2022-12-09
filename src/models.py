@@ -67,17 +67,22 @@ class Apartment(BaseModel):
     owner = relationship("Renter", back_populates="apartment")
 
 
-class service_type(BaseModel):
+class Service_type(BaseModel):
     __tablename__ = "service_type"
     name = Column(String)
     mesure = Column(String)
+
+    services= relationship("Service", back_populates="service_type", uselist=False)
 
 
 class Service(BaseModel):
     __tablename__ = "service"
     service_number = Column(Integer)
     tariff = Column(Float)
-    #payments = relationship("Payment", back_populates="service")
+    payments = relationship("Payment", back_populates="service")
+
+    service_type_id = Column(Integer, ForeignKey("service_type.id"), unique=True)
+    service_type = relationship("Service_type", back_populates="services")
 
 
 class Payment(BaseModel):
@@ -90,5 +95,7 @@ class Payment(BaseModel):
     renter_id = Column(Integer, ForeignKey("renter.id"))
     renter = relationship("Renter", back_populates="payments")
 
-    #service_id = Column(Integer, ForeignKey("renter.id"))
-    #service = relationship("Service", back_populates="payments")
+    service_id = Column(Integer, ForeignKey("service.id"))
+    service = relationship("Service", back_populates="payments")
+
+

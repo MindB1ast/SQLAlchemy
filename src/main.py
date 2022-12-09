@@ -162,30 +162,64 @@ def create_apartment_for_renter(owner_id: int, apartment: schemas.ApertmentCreat
 #    return apartment
 
 @app.post("/renter/{renter_id}/payment/", response_model=schemas.Payment)
-def create_payment_for_renter(renter_id: int, payment: schemas.PaymentCreate, db: Session = Depends(get_db)):
+def create_payment_for_renter(renter_id: int, service_id: int, payment: schemas.PaymentCreate,
+                              db: Session = Depends(get_db)):
     """
     Добавление квартиросёмщику оплаты
     """
-    print(renter_id)
-    renter = crud.get_renter(db=db , renter_id=renter_id)
-
+    # print(renter_id)
+    renter = crud.get_renter(db=db, renter_id=renter_id)
+    service = crud.get_service_by_id(db=db, service_id=service_id)
     if (renter is None):
         raise HTTPException(status_code=404, detail="Renter not found, create user first or use other user")
 
-    payment = crud.create_payment(db=db, payment=payment, Renter_id=renter_id )
+    if (service is None):
+        raise HTTPException(status_code=404, detail="Service is not found")
+
+    payment = crud.create_payment(db=db, payment=payment, Renter_id=renter_id, Service_id=service_id)
 
     return payment
 
-
-@app.get("/payment/", response_model=list[schemas.Payment])
-def read_payments(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """
-    Получение списка оплат
-    """
-    payments = crud.get_payments(db, skip=skip, limit=limit)
-    return payments
 
 # @app.get("/renter/{renter_id}/payment/")
 # def get_payments_by_renter( db: Session = Depends(get_db), renter_id: int):
 #    print(renter_id)
 #    return crud.get_payments_by_renter( db=db )#,renter_id=renter_id )
+
+@app.get("/Services/", response_model=list[schemas.Service])
+def read_services(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Получение услуг
+    """
+    Services = crud.get_services(db, skip=skip, limit=limit)
+    return Services
+
+
+@app.post("/Service_types/{service_type_id}/Service/", response_model=schemas.Service)
+def create_service(service: schemas.ServiceCreate, service_type_id: int, db: Session = Depends(get_db)):
+    """
+    Создание пользователя, если такой email уже есть в БД, то выдается ошибка
+    """
+    # db_service = crud.get_renter_by_account(db, account=renter.account)
+    # if db_renter:
+    #    raise HTTPException(status_code=400, detail="Email already registered")
+    return crud.create_service(db=db, service=service, service_type_id=service_type_id)
+
+
+@app.get("/Service_types/", response_model=list[schemas.ServiceType])
+def read_service_types(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    """
+    Получение видов услуг
+    """
+    Services_types = crud.get_service_types(db, skip=skip, limit=limit)
+    return Services_types
+
+
+@app.post("/Service_type/", response_model=schemas.ServiceType)
+def create_service_id(service_type: schemas.ServiceTypeCreate, db: Session = Depends(get_db)):
+    """
+    Создать тип услуг
+    """
+    db_service_type = crud.create_service_type(db=db, service_type=service_type)
+
+    return db_service_type

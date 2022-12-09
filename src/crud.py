@@ -145,9 +145,9 @@ def create_apartment(db: Session, apartment: schemas.ApertmentCreate, renter_id:
     return db_apartment
 
 
-def create_payment(db: Session, payment: schemas.PaymentBase, Renter_id: int #, Service_id: int
+def create_payment(db: Session, payment: schemas.PaymentBase, Renter_id: int, Service_id: int
                    ):
-    db_payment = models.Payment(**payment.dict(), renter_id=Renter_id#, service_id=Service_id
+    db_payment = models.Payment(**payment.dict(), renter_id=Renter_id, service_id=Service_id
                                 )
 
     db.add(db_payment)
@@ -167,10 +167,11 @@ def get_payments_by_renter(db: Session, renter_id: int):
     return db.query(models.Payment).filter_by(renter_id=renter_id).all()
 
 
-def create_service(db: Session, service: schemas.ServiceCreate):
+def create_service(db: Session, service: schemas.ServiceCreate, service_type_id: int):
     db_service = models.Service(
         service_number=service.service_number,
         tariff=service.tariff,
+        service_type_id=service_type_id
     )
 
     db.add(db_service)
@@ -178,8 +179,36 @@ def create_service(db: Session, service: schemas.ServiceCreate):
     db.refresh(db_service)
     return db_service
 
+
 def get_services(db: Session, skip: int = 0, limit: int = 100):
     """
     Получить услуги
     """
     return db.query(models.Service).offset(skip).limit(limit).all()
+
+
+def get_service_by_id(db: Session, service_id: int):
+    """
+    Получить услугу по id
+    """
+    return db.query(models.Service).filter(models.Service.id == service_id).first()
+
+
+def get_service_types(db: Session, skip: int = 0, limit: int = 100):
+    """
+    Получить виды услуг
+    """
+    return db.query(models.Service_type).offset(skip).limit(limit).all()
+
+
+def create_service_type(db: Session, service_type: schemas.ServiceTypeCreate):
+    """
+    Добавление новый тип услуг
+    """
+    db_service_type = models.Service_type(name=service_type.name, mesure=service_type.mesure)
+    # db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
+    db.add(db_service_type)
+    # db.add(db_user)
+    db.commit()
+    db.refresh(db_service_type)
+    return db_service_type

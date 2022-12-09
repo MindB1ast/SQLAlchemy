@@ -74,13 +74,15 @@ class PaymentBase(BaseModel):
 class Payment(PaymentBase):
     id: int
     renter_id: int
-    #payment_id:int
+    service_id: int
 
     class Config:
         orm_mode = True
 
 
 class PaymentCreate(PaymentBase):
+    # service_id: int
+    # renter_id: int
     pass
 
 
@@ -132,7 +134,7 @@ class Renter(RenterBase):
     id: int
     account: int
     phone_number: int
-    payment: list[Payment] = []
+    payments: list[Payment] = []
     apartment: Apartment | None
 
     class Config:
@@ -150,6 +152,41 @@ class ApartmentSearch(BaseModel):
     House: str
     Number: str
 
+    # pass
+
+
+class ServiceTypeBase(BaseModel):
+    """
+    Базовый класс для Renter
+    """
+    name: str
+    mesure: str
+
+
+class ServiceTypeCreate(ServiceTypeBase):
+    """
+    Класс для создания владельца
+    """
+    pass
+
+
+class ServiceType(ServiceTypeBase):
+    """
+    Класс для отображения владельца
+    """
+    id: int
+    name: str
+    mesure: str
+    #services: list[Service] = []
+
+    # services: list[Service] = []
+
+    class Config:
+        """
+        Задание настройки для возможности работать с объектами ORM
+        """
+        orm_mode = True
+
 
 class ServiceBase(BaseModel):
     service_number: int
@@ -157,14 +194,19 @@ class ServiceBase(BaseModel):
 
 
 class ServiceCreate(ServiceBase):
-    pass
+    service_type_id: int
 
 
 class Service(ServiceBase):
     id: int
     service_number: int
     tariff: float
-    Payments: list[Payment] = []
+    payments: list[Payment] = []
+    # service_type_id: int
+    service_type: ServiceType | None
+
+    # apartment: Apartment | None
+
     class Config:
         """
         Задание настройки для возможности работать с объектами ORM

@@ -22,24 +22,6 @@ class BaseModel(Base):
         return f"<{type(self).__name__}(id={self.id})>"
 
 
-class User(BaseModel):
-    __tablename__ = "users"
-
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
-
-    items = relationship("Item", back_populates="owner")
-
-
-class Item(BaseModel):
-    __tablename__ = "items"
-
-    title = Column(String, index=True)
-    description = Column(String, index=True)
-
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", back_populates="items")
 
 
 class Renter(BaseModel):

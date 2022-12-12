@@ -10,7 +10,7 @@ app = FastAPI()
 
 
 # Dependency
-def get_db():
+def get_db(): # pragma: no cover
     """
     Задаем зависимость к БД. При каждом запросе будет создаваться новое
     подключение.
@@ -44,7 +44,7 @@ def read_renters(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
     return renters
 
 
-@app.get("/renters/accaunt/{accaunt}", response_model=schemas.Renter)
+@app.get("/renters/account/{account}", response_model=schemas.Renter)
 def read_reanter_by_accaunt(account: int, db: Session = Depends(get_db)):
     """
     Получение владельца по номеру лицевого счёта, если такого нет, то выдается ошибка
@@ -52,7 +52,7 @@ def read_reanter_by_accaunt(account: int, db: Session = Depends(get_db)):
     db_renter = crud.get_renter_by_account(db, account=account)
 
     if db_renter is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Renter not found")
     return db_renter
 
 
@@ -63,7 +63,7 @@ def read_reanter_by_id(id: int, db: Session = Depends(get_db)):
     """
     db_renter = crud.get_renter(db, renter_id=id)
     if db_renter is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Renter not found")
     return db_renter
 
 
@@ -83,11 +83,12 @@ def read_apartment(id: int, db: Session = Depends(get_db)):
     """
     db_apartment = crud.get_apartment(db, apartment_id=id)
     if db_apartment is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="apartment is not exist")
+
     return db_apartment
 
 
-@app.post("/renter/{renter_id}/apartment/", response_model=schemas.Apartment)
+@app.post("/renter/{owner_id}/apartment/", response_model=schemas.Apartment)
 def create_apartment_for_renter(owner_id: int, apartment: schemas.ApertmentCreate, db: Session = Depends(get_db)):
     """
     Добавление квартиросёмщику придмета
@@ -143,6 +144,7 @@ def read_services(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     """
     Получение услуг
     """
+
     Services = crud.get_services(db, skip=skip, limit=limit)
     return Services
 
@@ -152,10 +154,17 @@ def create_service(service: schemas.ServiceCreate, service_type_id: int, db: Ses
     """
     Создание пользователя, если такой email уже есть в БД, то выдается ошибка
     """
+    service_type=crud.get_service_type_by_id(db=db,service_type_id=service_type_id)
+    if service_type is None:
+        raise HTTPException(status_code=400, detail="service type in not exsist")
     # db_service = crud.get_renter_by_account(db, account=renter.account)
     # if db_renter:
     #    raise HTTPException(status_code=400, detail="Email already registered")
+
     return crud.create_service(db=db, service=service, service_type_id=service_type_id)
+
+
+
 
 
 @app.get("/Service_types/", response_model=list[schemas.ServiceType])

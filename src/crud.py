@@ -64,7 +64,7 @@ def get_apartment(db: Session, apartment_id: int):
     """
     Получить владельцев квартиры по id
     """
-    return db.query(models.Renter).filter(models.Renter.id == apartment_id).first()
+    return db.query(models.Apartment).filter(models.Apartment.id == apartment_id).first()
 
 
 # добавить проверку на наличие квартиры у renterа
@@ -116,11 +116,14 @@ def get_payments_by_renter(db: Session, renter_id: int):
 
 
 def create_service(db: Session, service: schemas.ServiceCreate, service_type_id: int):
+    #db_service = models.Service(**service.dict(),  service_type_id=service_type_id )
     db_service = models.Service(
         service_number=service.service_number,
         tariff=service.tariff,
-        service_type_id=service_type_id
+        service_type_id=  service_type_id
     )
+
+    #print(db_service.__dict__)
 
     db.add(db_service)
     db.commit()
@@ -148,12 +151,19 @@ def get_service_types(db: Session, skip: int = 0, limit: int = 100):
     """
     return db.query(models.Service_type).offset(skip).limit(limit).all()
 
+def get_service_type_by_id(db: Session, service_type_id: int):
+    """
+    Получить услугу по id
+    """
+    return db.query(models.Service_type).filter(models.Service_type.id == service_type_id).first()
+
 
 def create_service_type(db: Session, service_type: schemas.ServiceTypeCreate):
     """
     Добавление новый тип услуг
     """
     db_service_type = models.Service_type(name=service_type.name, mesure=service_type.mesure)
+    #print(service_type.__dict__)
     # db_user = models.User(email=user.email, hashed_password=fake_hashed_password)
     db.add(db_service_type)
     # db.add(db_user)

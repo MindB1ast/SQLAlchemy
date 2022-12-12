@@ -18,10 +18,8 @@ class BaseModel(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    def __repr__(self):
+    def __repr__(self):# pragma: no cover
         return f"<{type(self).__name__}(id={self.id})>"
-
-
 
 
 class Renter(BaseModel):
@@ -54,7 +52,7 @@ class Service_type(BaseModel):
     name = Column(String)
     mesure = Column(String)
 
-    services= relationship("Service", back_populates="service_type", uselist=False)
+    services = relationship("Service", back_populates="service_type")
 
 
 class Service(BaseModel):
@@ -63,7 +61,7 @@ class Service(BaseModel):
     tariff = Column(Float)
     payments = relationship("Payment", back_populates="service")
 
-    service_type_id = Column(Integer, ForeignKey("service_type.id"), unique=True)
+    service_type_id = Column(Integer, ForeignKey("service_type.id"))
     service_type = relationship("Service_type", back_populates="services")
 
 
@@ -79,5 +77,3 @@ class Payment(BaseModel):
 
     service_id = Column(Integer, ForeignKey("service.id"))
     service = relationship("Service", back_populates="payments")
-
-

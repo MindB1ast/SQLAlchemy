@@ -140,7 +140,8 @@ class ServiceBase(BaseModel):
 
 
 class ServiceCreate(ServiceBase):
-    service_type_id: int
+    pass
+    #service_type_id: int
 
 
 class Service(ServiceBase):

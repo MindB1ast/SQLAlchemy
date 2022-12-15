@@ -10,7 +10,7 @@ app = FastAPI()
 
 
 # Dependency
-def get_db(): # pragma: no cover
+def get_db():  # pragma: no cover
     """
     Задаем зависимость к БД. При каждом запросе будет создаваться новое
     подключение.
@@ -20,8 +20,6 @@ def get_db(): # pragma: no cover
         yield db
     finally:
         db.close()
-
-
 
 
 @app.post("/renter/", response_model=schemas.Renter)
@@ -96,10 +94,16 @@ def create_apartment_for_renter(owner_id: int, apartment: schemas.ApertmentCreat
 
     renter = crud.get_renter(db, renter_id=owner_id)
 
-    if (renter is None):
+    if renter is None:
         raise HTTPException(status_code=404, detail="User not found, create user first or use other user")
-    if (renter.apartment is not None):
+    if renter.apartment is not None:
         raise HTTPException(status_code=404, detail="User alredy have apartment")
+    # db_apartment = crud.get_apartment_by_shn(db=db, Street=apartment.street, House=apartment.house,
+    #                                         Number=apartment.number)
+
+    # if db_apartment is not None:
+    #    raise HTTPException(status_code=404, detail="Apartment with this location already exist")
+
     return crud.create_apartment(db=db, apartment=apartment, renter_id=owner_id)
 
 
@@ -154,7 +158,7 @@ def create_service(service: schemas.ServiceCreate, service_type_id: int, db: Ses
     """
     Создание пользователя, если такой email уже есть в БД, то выдается ошибка
     """
-    service_type=crud.get_service_type_by_id(db=db,service_type_id=service_type_id)
+    service_type = crud.get_service_type_by_id(db=db, service_type_id=service_type_id)
     if service_type is None:
         raise HTTPException(status_code=400, detail="service type in not exsist")
     # db_service = crud.get_renter_by_account(db, account=renter.account)
@@ -162,9 +166,6 @@ def create_service(service: schemas.ServiceCreate, service_type_id: int, db: Ses
     #    raise HTTPException(status_code=400, detail="Email already registered")
 
     return crud.create_service(db=db, service=service, service_type_id=service_type_id)
-
-
-
 
 
 @app.get("/Service_types/", response_model=list[schemas.ServiceType])

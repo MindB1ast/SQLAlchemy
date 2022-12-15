@@ -55,9 +55,9 @@ def get_apartments(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Apartment).offset(skip).limit(limit).all()
 
 
-def get_apartment_by_shn(db: Session, Street: str, House: str, Number: str):
-    apartment = db.query(models.Apartment).filter_by(street=Street, house=House, number=Number).first()
-    return apartment
+#def get_apartment_by_shn(db: Session, Street: str, House: str, Number: str):
+#    apartment = db.query(models.Apartment).filter_by(street=Street, house=House, number=Number).first()
+#    return apartment
 
 
 def get_apartment(db: Session, apartment_id: int):
@@ -74,8 +74,8 @@ def create_apartment(db: Session, apartment: schemas.ApertmentCreate, renter_id:
     """
     # renter= get_renter(db, apartment.owner_id)
 
-    if get_apartment_by_shn(db, apartment.street, apartment.house, apartment.number) is not None:
-        raise HTTPException(status_code=404, detail="Apartment with this location already exist")
+    #if get_apartment_by_shn(db, apartment.street, apartment.house, apartment.number) is not None:
+    #    raise HTTPException(status_code=404, detail="Apartment with this location already exist")
 
     db_apartment = models.Apartment(
         street=apartment.street,
@@ -104,15 +104,15 @@ def create_payment(db: Session, payment: schemas.PaymentBase, Renter_id: int, Se
     return db_payment
 
 
-def get_payments(db: Session, skip: int = 0, limit: int = 100):
-    """
-    Получить владельцев квартир
-    """
-    return db.query(models.Payment).offset(skip).limit(limit).all()
+#def get_payments(db: Session, skip: int = 0, limit: int = 100):
+#   """
+#    Получить владельцев квартир
+#    """
+#    return db.query(models.Payment).offset(skip).limit(limit).all()
 
 
-def get_payments_by_renter(db: Session, renter_id: int):
-    return db.query(models.Payment).filter_by(renter_id=renter_id).all()
+#def get_payments_by_renter(db: Session, renter_id: int):
+#    return db.query(models.Payment).filter_by(renter_id=renter_id).all()
 
 
 def create_service(db: Session, service: schemas.ServiceCreate, service_type_id: int):

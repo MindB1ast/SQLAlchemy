@@ -90,7 +90,7 @@ def test_get_renter_acc():
     assert data["phone_number"] == 79088822891
 
 
-def test_get_renter_acc_not_found(): # pragma: no cover
+def test_get_renter_acc_not_found():
     """
     Тест на получение списка пользователей из БД
     """
@@ -112,9 +112,9 @@ def test_get_renter_id():
     assert data["phone_number"] == 79088822891
 
 
-def test_get_renter_acc_not_found():
+def test_get_renter_id_not_found():
     """
-    Проверка случая, если пользователь с таким id отсутствует в БД
+    Тест на получение списка пользователей из БД
     """
     response = client.get("/renters/id/2")
     assert response.status_code == 404, response.text
@@ -207,6 +207,7 @@ def test_create_apartment():
     assert data["owner_id"] == 1
 
 
+
 def test_create_apartment_miss_renter():
     """
     Тест на создание квартиры несуществующему владельцу
@@ -225,6 +226,8 @@ def test_create_apartment_miss_renter():
     assert data["detail"] == "User not found, create user first or use other user"
 
 
+
+
 def test_get_apartments():
     """
     Тест на получение списка пользователей из БД
@@ -241,6 +244,7 @@ def test_create_apartment_alredy_exist():
     Тест на создание квартиры владельцу с квартирой
     """
     # response = client.post("/users/", json={"email": "email@example.com", "password": "qwe123"})
+
     response = client.post("/renter/1/apartment/", json={
         "street": "string",
         "house": "stsraing",

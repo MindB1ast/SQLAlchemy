@@ -6,7 +6,7 @@ services:
   # Имя сервиса
   app:
     # Указываем имя, которое будет присвоено контейнеру после запуска
-    container_name: 'sqlalchemy'
+    container_name: 'sqlalchemy2'
     build:
       # Контекст сборки в данном случае текущая директория
       context: .
@@ -25,7 +25,7 @@ services:
     # Указваем зависемости контейнера, например этому необходима БД
     depends_on:
       - database
-    retart: on-failure
+    restart: on-failure
 
   database:
     # Имя базового образа, здесь используем БД Postgres
